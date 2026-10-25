@@ -1,0 +1,45 @@
+{
+  "name": "termhub",
+  "productName": "TermHub",
+  "version": "0.1.0",
+  "description": "A Mac terminal with a ChatGPT-style session history sidebar",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "rebuild": "electron-rebuild -f -w node-pty",
+    "postinstall": "electron-rebuild -f -w node-pty",
+    "dist": "electron-builder --mac --dir",
+    "icon": "electron scripts/make-icon.js"
+  },
+  "build": {
+    "appId": "io.github.termhub.app",
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "target": "dir",
+      "icon": "build/icon.icns"
+    },
+    "files": [
+      "src/**",
+      "node_modules/**",
+      "package.json"
+    ]
+  },
+  "dependencies": {
+    "@xterm/addon-fit": "0.10.0",
+    "@xterm/addon-search": "0.15.0",
+    "@xterm/addon-web-links": "0.11.0",
+    "@xterm/addon-webgl": "0.18.0",
+    "@xterm/xterm": "5.5.0",
+    "node-pty": "1.0.0"
+  },
+  "devDependencies": {
+    "@electron/rebuild": "3.7.1",
+    "electron": "33.2.0",
+    "electron-builder": "25.1.8"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/byte-coding/termhub"
+  }
+}
