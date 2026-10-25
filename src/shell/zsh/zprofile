@@ -1,0 +1,3 @@
+ZDOTDIR="${TERMHUB_USER_ZDOTDIR:-$HOME}"
+[[ -f "$ZDOTDIR/.zprofile" ]] && source "$ZDOTDIR/.zprofile"
+ZDOTDIR="$TERMHUB_ZDOTDIR"

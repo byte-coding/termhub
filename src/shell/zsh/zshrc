@@ -1,0 +1,17 @@
+if [[ "$HISTFILE" == "$TERMHUB_ZDOTDIR/.zsh_history" ]]; then
+  HISTFILE="${TERMHUB_USER_ZDOTDIR:-$HOME}/.zsh_history"
+fi
+ZDOTDIR="${TERMHUB_USER_ZDOTDIR:-$HOME}"
+[[ -f "$ZDOTDIR/.zshrc" ]] && source "$ZDOTDIR/.zshrc"
+ZDOTDIR="$TERMHUB_ZDOTDIR"
+
+if [[ "$TERMHUB_PROMPT" == 1 && ( "$PROMPT" == '%n@%m %1~ %# ' || -z "$PROMPT" ) ]]; then
+  setopt PROMPT_SUBST
+  autoload -Uz vcs_info add-zsh-hook
+  zstyle ':vcs_info:*' enable git
+  zstyle ':vcs_info:git:*' formats ' %F{8}⎇ %b%f'
+  zstyle ':vcs_info:git:*' actionformats ' %F{8}⎇ %b%f %F{yellow}%a%f'
+  _termhub_vcs() { vcs_info }
+  add-zsh-hook precmd _termhub_vcs
+  PROMPT='%B%F{green}%1~%f%b${vcs_info_msg_0_} %(?.%F{cyan}.%F{red})›%f '
+fi
