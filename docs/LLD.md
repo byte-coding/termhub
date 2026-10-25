@@ -365,6 +365,14 @@ runs; without the fix, TermHub shells would write a separate history file. After
 
 - `npm install` runs `electron-rebuild -f -w node-pty` (postinstall) to compile the PTY addon for Electron's ABI.
 - `npm run dist` → `electron-builder --mac --dir` → `dist/mac-arm64/TermHub.app`, using `build/icon.icns`.
+- `npm run release` → DMG + ZIP for `arm64` and `x64`. electron-builder's own signing is disabled
+  (`mac.identity: null`); the `afterPack` hook `scripts/adhoc-sign.js` ad-hoc signs each `.app`
+  (`codesign --force --deep --sign -`) and verifies it with `--strict` before the DMG/ZIP are made, so
+  downloads open with Gatekeeper's "unverified developer" prompt instead of "damaged". The x64 build
+  compiles `node-pty` with node-gyp, which needs a Python that still has `distutils` (≤ 3.11).
+- `.github/workflows/release.yml` runs on `release: published` (or manually with a tag): Python 3.11,
+  Node 22, `npm ci`, version taken from the tag, `npm run release`, signature check, then
+  `gh release upload` of the four files.
 - `npm run icon` re-renders `build/icon.png` from `build/icon.html` with an offscreen Electron window,
   then builds `build/icon.icns` from it with `sips` + `iconutil`.
 
