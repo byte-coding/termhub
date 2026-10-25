@@ -44,7 +44,20 @@ resumable — until you delete it.
 
 ## Install
 
-TermHub currently runs on **macOS** (Apple Silicon and Intel) and is built from source.
+TermHub runs on **macOS** (Apple Silicon and Intel).
+
+### Download
+
+1. Grab the latest build from **[Releases](https://github.com/byte-coding/termhub/releases/latest)**:
+   `TermHub-<version>-arm64.dmg` for Apple Silicon (M1 and later) or `TermHub-<version>-x64.dmg` for Intel Macs
+   (not sure? Apple menu → *About This Mac* → *Chip*).
+2. Open the DMG and drag **TermHub** into **Applications**.
+3. The app is ad-hoc signed but not notarized by Apple, so the first launch is blocked. Open
+   **System Settings → Privacy & Security**, scroll to the message about TermHub and click **Open Anyway**
+   (on macOS 14 and earlier, right-click the app → **Open** also works).
+   Prefer the terminal? `xattr -dr com.apple.quarantine /Applications/TermHub.app`
+
+### Build from source
 
 **Requirements:** Node.js 18 or newer, and Xcode Command Line Tools (`xcode-select --install`) for the native `node-pty` module.
 
@@ -62,7 +75,10 @@ npm run dist                                   # → dist/mac-arm64/TermHub.app 
 cp -R dist/mac-arm64/TermHub.app /Applications/
 ```
 
-The build is not code-signed or notarized. If macOS blocks it, open **System Settings → Privacy & Security**, find the message about TermHub and click **Open Anyway** (on macOS 14 and earlier, right-click → **Open** also works). Alternatively: `xattr -dr com.apple.quarantine /Applications/TermHub.app`.
+Apps you build yourself aren't quarantined, so they open directly. To produce the same DMG/ZIP files as a
+release (both architectures, ad-hoc signed), run `npm run release`; the Intel build compiles `node-pty`
+with node-gyp, which needs a Python that still ships `distutils` (3.11 or older, e.g.
+`npm_config_python=/usr/bin/python3 npm run release`).
 
 <details>
 <summary><b>Troubleshooting install</b></summary>
@@ -136,7 +152,8 @@ src/
   index.html     Markup        styles.css   Themes and layout
   shell/zsh/     Optional prompt integration (copied to a private ZDOTDIR at launch)
 build/           App icon (icon.html is the source; `npm run icon` re-renders icon.png and icon.icns)
-scripts/         make-icon.js
+scripts/         make-icon.js, adhoc-sign.js (release signing hook)
+.github/         Release workflow (builds and attaches DMG/ZIP files)
 docs/            HLD, LLD and images
 ```
 
@@ -155,6 +172,12 @@ Issues and pull requests are welcome. Run `npm start` to try changes; the app ca
 ```bash
 TERMHUB_USER_DATA=/tmp/termhub-dev npm start
 ```
+
+## Releasing
+
+Publishing a GitHub release (for example with tag `v0.2.0`) runs [`.github/workflows/release.yml`](.github/workflows/release.yml),
+which builds the Apple Silicon and Intel DMG/ZIP files on a GitHub-hosted Mac, verifies their signatures and
+attaches them to the release. It can also be re-run for an existing tag from the *Actions* tab.
 
 ## License
 

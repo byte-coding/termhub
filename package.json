@@ -3,26 +3,46 @@
   "productName": "TermHub",
   "version": "0.1.0",
   "description": "A Mac terminal with a ChatGPT-style session history sidebar",
+  "author": "Pavan Yadav",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/byte-coding/termhub"
+  },
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
     "rebuild": "electron-rebuild -f -w node-pty",
     "postinstall": "electron-rebuild -f -w node-pty",
     "dist": "electron-builder --mac --dir",
-    "icon": "electron scripts/make-icon.js"
+    "icon": "electron scripts/make-icon.js",
+    "release": "electron-builder --mac dmg zip --arm64 --x64 --publish never"
   },
   "build": {
     "appId": "io.github.termhub.app",
     "mac": {
       "category": "public.app-category.developer-tools",
-      "target": "dir",
-      "icon": "build/icon.icns"
+      "icon": "build/icon.icns",
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "identity": null,
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false
     },
     "files": [
       "src/**",
       "node_modules/**",
       "package.json"
-    ]
+    ],
+    "dmg": {
+      "title": "TermHub ${version}",
+      "artifactName": "TermHub-${version}-${arch}.dmg"
+    },
+    "artifactName": "TermHub-${version}-${arch}-mac.${ext}",
+    "productName": "TermHub",
+    "afterPack": "scripts/adhoc-sign.js"
   },
   "dependencies": {
     "@xterm/addon-fit": "0.10.0",
@@ -36,10 +56,5 @@
     "@electron/rebuild": "3.7.1",
     "electron": "33.2.0",
     "electron-builder": "25.1.8"
-  },
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/byte-coding/termhub"
   }
 }
