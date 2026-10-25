@@ -44,8 +44,17 @@ jobs:
             npm version "$VERSION" --no-git-tag-version
           fi
 
+      # One architecture per run (parallel DMG builds race on hdiutil), retried
+      # because hdiutil detach fails intermittently on hosted runners.
       - name: Build DMG and ZIP (Apple Silicon + Intel)
-        run: npm run release
+        run: |
+          for ARCH in arm64 x64; do
+            for TRY in 1 2 3; do
+              npx electron-builder --mac dmg zip --$ARCH --publish never && break
+              [ "$TRY" = 3 ] && exit 1
+              echo "Retrying $ARCH build ($TRY failed)"; sleep 15
+            done
+          done
         env:
           npm_config_python: python3
 
