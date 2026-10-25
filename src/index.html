@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:" />
+    <title>TermHub</title>
+    <link rel="stylesheet" href="../node_modules/@xterm/xterm/css/xterm.css" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <aside id="sidebar">
+      <div class="sidebar-top drag">
+        <div class="traffic-space"></div>
+        <button id="collapse-sidebar" class="icon-btn no-drag" title="Hide sidebar (⌘\)">
+          <svg viewBox="0 0 16 16" width="15" height="15"><rect x="2" y="3" width="12" height="10" rx="2.5" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M6 3v10" stroke="currentColor" stroke-width="1.4"/></svg>
+        </button>
+      </div>
+
+      <div class="brand drag">
+        <div class="logo">
+          <svg viewBox="0 0 20 20" width="15" height="15"><path d="M5 6.5l3.5 3.5L5 13.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M10.5 14h4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="brand-text">
+          <div class="brand-name">TermHub</div>
+          <div class="brand-sub" id="brand-sub">Your terminal history</div>
+        </div>
+      </div>
+
+      <button id="new-session" class="new-btn">
+        <svg viewBox="0 0 16 16" width="14" height="14"><path d="M8 3.5v9M3.5 8h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>
+        <span>New session</span>
+        <kbd>⌘T</kbd>
+      </button>
+
+      <div class="search-wrap">
+        <svg viewBox="0 0 16 16" width="13" height="13"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <input id="session-search" type="search" placeholder="Search sessions & commands" spellcheck="false" />
+        <kbd class="search-kbd">⌥⌘F</kbd>
+      </div>
+
+      <nav id="session-list"></nav>
+
+      <div class="sidebar-foot">
+        <div class="profile">
+          <div id="profile-avatar" class="profile-avatar"></div>
+          <div class="profile-text">
+            <div id="profile-name"></div>
+            <div id="profile-host"></div>
+          </div>
+        </div>
+        <button id="open-settings" class="icon-btn" title="Settings (⌘,)">
+          <svg viewBox="0 0 16 16" width="15" height="15"><path d="M2.5 4.5h6M11.5 4.5h2M2.5 11.5h2M7.5 11.5h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="10" cy="4.5" r="1.6" stroke="currentColor" stroke-width="1.4" fill="none"/><circle cx="6" cy="11.5" r="1.6" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>
+        </button>
+        <button id="theme-toggle" class="icon-btn" title="Toggle light / dark">
+          <svg class="sun" viewBox="0 0 16 16" width="15" height="15"><circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          <svg class="moon" viewBox="0 0 16 16" width="15" height="15"><path d="M13 9.5A5.5 5.5 0 016.5 3a5.5 5.5 0 106.5 6.5z" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </aside>
+    <div id="resizer"></div>
+
+    <main id="main">
+      <div class="main-drag drag"></div>
+      <section id="card">
+        <header id="header" class="drag">
+          <button id="toggle-sidebar" class="icon-btn no-drag" title="Show sidebar (⌘\)">
+            <svg viewBox="0 0 16 16" width="15" height="15"><rect x="2" y="3" width="12" height="10" rx="2.5" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M6 3v10" stroke="currentColor" stroke-width="1.4"/></svg>
+          </button>
+          <div id="header-avatar" class="avatar"></div>
+          <div class="header-text">
+            <div id="header-title"></div>
+            <div class="chips">
+              <span id="chip-cwd" class="chip">
+                <svg viewBox="0 0 16 16" width="11" height="11"><path d="M2 4.5A1.5 1.5 0 013.5 3h3l1.5 1.5h4.5A1.5 1.5 0 0114 6v5.5a1.5 1.5 0 01-1.5 1.5h-9A1.5 1.5 0 012 11.5z" stroke="currentColor" stroke-width="1.3" fill="none"/></svg>
+                <span id="header-cwd"></span>
+              </span>
+              <span id="chip-branch" class="chip chip-branch" hidden>
+                <svg viewBox="0 0 16 16" width="11" height="11"><circle cx="4.5" cy="3.5" r="1.5" stroke="currentColor" stroke-width="1.3" fill="none"/><circle cx="4.5" cy="12.5" r="1.5" stroke="currentColor" stroke-width="1.3" fill="none"/><circle cx="11.5" cy="5.5" r="1.5" stroke="currentColor" stroke-width="1.3" fill="none"/><path d="M4.5 5v6M11.5 7c0 2.5-3 2.5-6.5 4" stroke="currentColor" stroke-width="1.3" fill="none"/></svg>
+                <span id="header-branch"></span>
+              </span>
+            </div>
+          </div>
+          <div id="header-status"><span class="pulse"></span><span id="header-status-text"></span></div>
+          <button id="header-more" class="icon-btn no-drag" title="Session menu">⋯</button>
+        </header>
+
+        <div id="terminals"></div>
+
+        <div id="findbar" hidden>
+          <svg viewBox="0 0 16 16" width="13" height="13"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <input id="find-input" type="text" placeholder="Find in output" spellcheck="false" />
+          <span id="find-count"></span>
+          <button id="find-prev" class="icon-btn" title="Previous (⇧⌘G)">↑</button>
+          <button id="find-next" class="icon-btn" title="Next (⌘G)">↓</button>
+          <button id="find-close" class="icon-btn" title="Close (Esc)">✕</button>
+        </div>
+
+        <div id="ended-bar" hidden>
+          <div class="ended-icon">
+            <svg viewBox="0 0 16 16" width="14" height="14"><path d="M8 2.5a5.5 5.5 0 105.5 5.5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M8 5v3l2 1.5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+          </div>
+          <div class="ended-text">
+            <strong>Session ended</strong>
+            <span>History is saved — pick up where you left off.</span>
+          </div>
+          <button id="resume-btn" class="primary-btn">Resume shell <kbd>⌘R</kbd></button>
+        </div>
+
+        <footer id="statusbar">
+          <span id="status-left"></span>
+          <span class="status-right">
+            <svg viewBox="0 0 16 16" width="11" height="11"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            History saved
+          </span>
+        </footer>
+
+        <div id="empty" hidden>
+          <div class="empty-logo">
+            <svg viewBox="0 0 20 20" width="30" height="30"><path d="M5 6.5l3.5 3.5L5 13.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M10.5 14h4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <h1>Start something great</h1>
+          <p>Every session is saved, titled from your work, and resumable.</p>
+          <button class="primary-btn big" id="empty-new">New session <kbd>⌘T</kbd></button>
+          <div class="shortcuts">
+            <div><kbd>⌘T</kbd> New session</div>
+            <div><kbd>⌘R</kbd> Resume shell</div>
+            <div><kbd>⇧⌘← →</kbd> Switch session</div>
+            <div><kbd>⌥⌘F</kbd> Search history</div>
+            <div><kbd>⌘\</kbd> Toggle sidebar</div>
+            <div><kbd>⇧⌘F</kbd> Focus mode</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="settings" class="modal" hidden>
+      <div class="modal-card">
+        <h2>Settings</h2>
+        <label>Theme
+          <select id="set-theme">
+            <option value="paper">Paper — soft light</option>
+            <option value="harbor">Graphite — charcoal &amp; sage</option>
+            <option value="dark">Dark</option>
+            <option value="system">Match system</option>
+          </select>
+        </label>
+        <label>Terminal colors
+          <select id="set-termcolors">
+            <option value="mac">Mac Terminal — white, standard colors</option>
+            <option value="theme">Match theme — soft, muted</option>
+          </select>
+        </label>
+        <label>Font family <input id="set-font" type="text" spellcheck="false" /></label>
+        <label>Font size <input id="set-size" type="number" min="8" max="32" step="0.5" /></label>
+        <label class="check"><input id="set-meta" type="checkbox" /> Use Option as Meta key</label>
+        <label class="check"><input id="set-blink" type="checkbox" /> Blinking cursor</label>
+        <label class="check"><input id="set-restore" type="checkbox" /> Reopen running sessions on launch</label>
+        <label class="check"><input id="set-prompt" type="checkbox" /> Styled zsh prompt (applies to new sessions)</label>
+        <div class="modal-actions">
+          <button id="settings-close" class="primary-btn">Done</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../node_modules/@xterm/xterm/lib/xterm.js"></script>
+    <script src="../node_modules/@xterm/addon-fit/lib/addon-fit.js"></script>
+    <script src="../node_modules/@xterm/addon-search/lib/addon-search.js"></script>
+    <script src="../node_modules/@xterm/addon-web-links/lib/addon-web-links.js"></script>
+    <script src="../node_modules/@xterm/addon-webgl/lib/addon-webgl.js"></script>
+    <script src="renderer.js"></script>
+  </body>
+</html>
