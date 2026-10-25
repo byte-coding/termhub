@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      html, body { margin: 0; width: 1024px; height: 1024px; background: transparent; overflow: hidden; }
+      .tile {
+        position: absolute; left: 100px; top: 100px; width: 824px; height: 824px; border-radius: 185px;
+        background: linear-gradient(160deg, #34363a 0%, #24252a 52%, #1b1c1f 100%);
+        box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35), inset 0 2px 0 rgba(255, 255, 255, 0.12), inset 0 -2px 0 rgba(0, 0, 0, 0.4);
+        overflow: hidden;
+      }
+      .sheen {
+        position: absolute; inset: 0;
+        background: radial-gradient(120% 70% at 20% 0%, rgba(163, 194, 176, 0.22), transparent 60%);
+      }
+      .bar { position: absolute; left: 92px; top: 92px; display: flex; gap: 22px; }
+      .bar i { width: 34px; height: 34px; border-radius: 50%; background: rgba(255, 255, 255, 0.14); }
+      svg { position: absolute; left: 0; top: 0; }
+    </style>
+  </head>
+  <body>
+    <div class="tile">
+      <div class="sheen"></div>
+      <div class="bar"><i></i><i></i><i></i></div>
+      <svg width="824" height="824" viewBox="0 0 824 824">
+        <defs>
+          <linearGradient id="sage" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#c3dccd" />
+            <stop offset="1" stop-color="#86ab95" />
+          </linearGradient>
+        </defs>
+        <path d="M228 330 L388 446 L228 562" fill="none" stroke="url(#sage)" stroke-width="64" stroke-linecap="round" stroke-linejoin="round" />
+        <rect x="430" y="532" width="190" height="60" rx="30" fill="url(#sage)" />
+      </svg>
+    </div>
+  </body>
+</html>
